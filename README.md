@@ -92,12 +92,15 @@ sift3 reads in all folders in dest to memory and for each variant creates a set 
 
 The search tokens from dest need to match the repo description once, in strict order. If all search tokens from dest match, then the item from repo is hardlinked into the matching subfolder in dest.
 
-Examples 3, 4, 6, 7 and 9 will match example 1.
+* Examples 3, 4, 6, 7 and 9 will match example 1.
+* Example 5 will not match because "Comedy" doesn't match example 1.
+* Example 7 will match because the underscores means a complete word match is not needed.
+* Example 8 will not match because the order is wrong.
+* Example 9 will match because the lower case "movies" is ignored.
 
+#### Warning: sift3 is intentionally designed to delete/clear whole folder trees without asking for any confirmation. Be careful. Backup your data.
 
-__Warning: sift3 is intentionally designed to delete/clear whole folder trees without asking for any confirmation. Be careful. Backup your data.
-
-__Warning: You should understand what hardlinking means and how it works. The files in dest are not copies, they are the actual same files as the files in repo. Don't edit the contents, unless you want it propagated to all the same hardlinked files.
+#### Warning: You should understand what hardlinking means and how it works. The files in dest are not copies, they are the actual same files as the files in repo. Don't edit the contents, unless you want it propagated to all the same hardlinked files.
 
 ### Clear
 
@@ -105,7 +108,7 @@ If you rename or restructure things you may want to remove old hardlinked itemes
 
 Parent dest folders and empty dest folders will remain.
 
-Warning: sift3 will NOT ask for any confirmation before it clears out dest.
+#### Warning: sift3 will NOT ask for any confirmation before it clears out dest.
 
 Tip: To get an empty dest just run a sift3 with --clear using an empty folder as repo. This is very useful if you want to backup dest. If you backup repo and an empty dest, you have a full backup.
 
@@ -115,15 +118,17 @@ You may want to find out what items in the repo are not matched in dest, so you 
 
 ### Performance and no progress indicator - verbosity
 
-Hardlinking is fast. Each repo item is compared to dest search sets held in RAM. But this is in essence a brute force nested linear search, every single dest folder is tested against every single item in repo, wich is very bad for performance. But for a moderate size repo and a moderate size dest, on a local fast filesystem, sift3 runtimes are typically measured in seconds or single minutes. Typically it is the filesystem speed that is the bottleneck, not the processing power.
+Some general attempts have been made to make sift3 reasonably fast. Compiled C++ is fast. Hardlinking is fast. All dest search sets held in RAM for fast access. But there is always room for more optimizations.
 
-But if you use sift3 on a remote filesystem on a NAS, over WiFi or slow Ethernet and both repo and dest is large, sift3 can take a long time to finish. I did some "worst case" testing over wifi to a NAS running on a RPi4 with mergerfs with very big repo and dest and runtimes could be close to an hour. Around half of that time was spent deleting old hardlinks using --clear.
+In essence sift3 is a brute force nested linear search, every single dest folder is tested against every single item in repo. This is very bad for performance, especially when repo and dest grows. But for a moderate size repo and a moderate size dest, on a local fast filesystem, sift3 runtimes are typically measured in seconds or single minutes. Typically it is the filesystem speed that is the bottleneck, not the processing power.
 
-If you need to improve performance, split your data into several smaller repo and dest. Run on a local filesystem, not remotely. In other words, run sift3 on the NAS itself, not on the remote networked shared filesystem.
+If you use sift3 on a remote networked filesystem on a NAS, over WiFi or slow Ethernet and both repo and dest is large, sift3 can take a very long time to finish. I did some "worst case" testing over wifi to a NAS running on a RPi4 with mergerfs with very big repo (~20TB) and big dest and runtimes could be close to an hour. Almost half of that time was spent just deleting old hardlinks using --clear.
 
-If you want some indication that sift3 is working and hasn't hung, you can increase the verbosity using the --verbosity commandline option. Each time you use the option the verbosity level is increased one step.
+If you need to improve performance, split your data into several smaller repo and dest. Run on a local filesystem, not remotely. In other words, run sift3 on the NAS itself, not on a client using a slow remote networked shared filesystem.
 
-Verbosity 0: sift3 is silent
+If you want some indication that sift3 is working, while it is running, and hasn't hung, you can increase the verbosity using the --verbosity commandline option. Each time you use the option the verbosity level is increased one step.
+
+Verbosity 0: sift3 is silent. This is the default.
 
 Verbosity 1: sift3 tells when it shifts between reading (and celaring) dest and reading repo.
 
