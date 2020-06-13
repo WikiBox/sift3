@@ -9,7 +9,7 @@ sift3 - A full rewrite of WikiBox/sift
 
 sift3 is a utility that allows you to sift source folders for items (files or folders) and selectively move or hard link these items to subfolders in a destination folder. 
 
-The idea is that as you download or create new files/media you make sure they have a good descriptive name and drop them into a repository subfolder. The repository can be structured with hierarchial folder structure or not.
+The idea is that as you download or create new files/media you make sure they have a good descriptive name and drop them into a repository subfolder. The repository can be structured with hierarchical folder structure or not.
 
 Then you create empty destination subfolders, with names that work as searches into the repository. 
 
@@ -25,7 +25,7 @@ If repo or dest is restructured you can clear dest before repopulating it by run
 
 ## What was wrong with sift?
 
-The old sift version worked OK but it could not use varieble depth repo and dest folder structures. Also the matching was very relaxed, resulting in too many false positive matches. In sift3 the "..." suffix is used to create "parent" subfolders to add depth to both repo and dest. The matching is made more strict with exact word matching in strict order. But this can be relaxed, if needed, by selectively turning off matching of word start or stop and allowing alternative matches in (non-parent) dest target folders.
+The old sift version worked OK but it could not use variable depth repo and dest folder structures. Also the matching was very relaxed, resulting in too many false positive matches. In sift3 the "..." suffix is used to create "parent" subfolders to add depth to both repo and dest. The matching is made more strict with exact word matching in strict order. But this can be relaxed, if needed, by selectively turning off matching of word start or stop and allowing alternative matches in (non-parent) dest target folders.
 
 ## Usage
 
@@ -73,7 +73,7 @@ The filenames of the parent folders and the items themselves is combined to prov
 
 Example:
 
-    1. /repo/old/Movies .../2001 - A Space Odessey - Science Fiction - Stanley Kubrik (1968)/2001.mkv
+    1. /repo/old/Movies .../2001 - A Space Odyssey - Science Fiction - Stanley Kubrik (1968)/2001.mkv
 
 Here we have a parent folder "Movies" and an item consisting of the subfolder "2001 - A Space Odessey - Stanley Kubrik (1968)". The description of the item is the combination of the parent folder name and the foldername. However, words in parent subfolders that are not capitalized (Title Case) are ignored, as are any of "(),;". So the description used by sift3 consists of the following tokens:
 
@@ -81,7 +81,7 @@ Here we have a parent folder "Movies" and an item consisting of the subfolder "2
     
 Sometimes CamelCase is used to separate words, instead of space. This is detected and used by sift3. So the filename:
 
-    2. Bladerunner ScienceFiction.mkv
+    2. /repo/Movies/Bladerunner ScienceFiction.mkv
     
 Would be used as the following tokens:
 
@@ -112,10 +112,11 @@ sift3 reads in all folders in dest to memory and for each variant creates a set 
 The search tokens from dest need to match the repo description once, in strict order. If all search tokens from dest match, then the item from repo is hardlinked into the matching subfolder in dest.
 
 * Examples 3, 4, 6, 7 and 9 will match example 1.
-* Example 5 will not match because "Comedy" doesn't match example 1.
-* Example 7 will match because the underscores means a complete word match is not needed.
-* Example 8 will not match because the order is wrong.
-* Example 9 will match because the lower case "movies" is ignored.
+* Examples 4, 7 and 9 will match example 2.
+* Example 5 will not match 1 because "Comedy" doesn't match example 1.
+* Example 7 will match 1 because the underscores means a complete word match is not needed.
+* Example 8 will not match 1 because the order is wrong.
+* Example 9 will match 1 because the lower case "movies" is ignored.
 
 #### Warning: sift3 is intentionally designed to delete/clear whole folder trees without asking for any confirmation. Be careful. Backup your data.
 
@@ -149,7 +150,7 @@ If you want some indication that sift3 is working, while it is running, and hasn
 
 Verbosity 0: sift3 is silent. This is the default.
 
-Verbosity 1: sift3 tells when it shifts between reading (and celaring) dest and reading repo.
+Verbosity 1: sift3 tells when it shifts between reading (and clearing) dest and reading repo.
 
 Verbosity 2: sift3 tells you about what it does with every item in dest and repo.
 
@@ -157,4 +158,4 @@ Verbosity 3: for debugging, not recommended...
 
 Verbosity 2 gives a good indication of the pace of sift3.
 
-Instead of using --verbosity multiple times you can use -v muliple times or -vv or -vvv.
+Instead of using --verbosity multiple times you can use -v multiple times or -vv or -vvv.
