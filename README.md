@@ -3,28 +3,47 @@ Repository sifter and hardlinker - Double Deep
 
 GPL3 Software
 
-sift3 - An improved file sifter
+sift3 - A full rewrite of WikiBox/sift
 
-sift3 is a utility, similar to sift, that allows you to automatically sift source folders for items (files or folders) and selectively move or hard link these items to subfolders in a destination folder. 
+## General
 
-This is similar to the older WikiBox/sift but sift3 is a total rewrite with much improved matching and features.
+sift3 is a utility that allows you to sift source folders for items (files or folders) and selectively move or hard link these items to subfolders in a destination folder. 
 
-Now sift3 supports varable depth repo and dest. Matching is by complete word or optionally free. CamelCase is detected and used.
+The idea is that as you download or create new files/media you make sure they have a good descriptive name and drop them into a repository subfolder. The repository can be structured with hierarchial folder structure or not.
+
+Then you create empty destination subfolders, with names that work as searches into the repository. 
+
+When you run sift3 it will do a brute force attempt to match all items in the repo against all target folders in dest. When there is a match, the repo item is hardlinked into the matching target dest folder.
+
+This can be seen as a form of "procedural curating". Instead of manually copying/linking every file and folder you specify how it should be done. And then let sift3 do it.
+
+Since files are hardlinked and not copied, there is very little space penalty for having the same item appear in many dest folders.
+
+Typical use is to add items, with descriptive names, to the repo. Then update dest by running "sift3 --missing repo dest". Afterwards the file dest/missing.txt can be examined to see what items in repo was not matched in dest. And new dest folders can be added, if needed.
+
+If repo or dest is restructured you can clear dest before repopulating it by running "sift3 --clear repo dest".
+
+## What was wrong with sift?
+
+The old sift version worked OK but it could not use varieble depth repo and dest folder structures. Also the matching was very relaxed, resulting in too many false positive matches. In sift3 the "..." suffix is used to create "parent" subfolders to add depth to both repo and dest. The matching is made more strict with exact word matching in strict order. But this can be relaxed, if needed, by selectively turning off matching of word start or stop and allowing alternative matches in (non-parent) dest target folders.
 
 ## Usage
 
     sift3 Copyright Anders Larsen 2020 gislagard@gmail.com
     
+    This program is free software under the terms of GPLv3.
+    
     Hardlink items in repo to matching folders at dest.
     
     Matching rules:
     
-      Items match once and in order.
+      Items match only once and in strict order.
       Matches are not case sensitive for ASCII.
       Suffix '...' in folder names creates a parent folder.
-      Lower case words in parent folders are not matched.
-      Use any of ',(); for alt match in not parent dest.
-      Use _underscore_ in dest to ignore word start/stop.
+      Lower case words in parent and dest folders are not matched.
+      Use any of ',(); for alternative match in not parent dest.
+      Full words must match. CamelCase is detected if used.
+      Use _underscore_ in dest to disable full word start/stop.
       
     Usage: " << argv[0] << " [options] repo dest
     
