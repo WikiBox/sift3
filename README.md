@@ -7,8 +7,6 @@ sift3 is a utility, similar to sift, that allows you to automatically sift sourc
 
 This is similar to the older WikiBox/sift but sift3 is a total rewrite with much improved matching and features.
 
-Warning: sift3 is intentionally designed to delete/clear whole folder trees without asking for any confirmation. Be careful. Backup your data.
-
 ## Usage
 
     sift2 Copyright Anders Larsen 2020 gislagard@gmail.com
@@ -92,17 +90,26 @@ The search tokens from dest need to match the repo description once, in strict o
 
 Examples 3, 4, 6, 7 and 9 will match example 1.
 
+
+__Warning: sift3 is intentionally designed to delete/clear whole folder trees without asking for any confirmation. Be careful. Backup your data.
+
+__Warning: You should understand what hardlinking means and how it works. The files in dest are not copies, they are the actual same files as the files in repo. Don't edit the contents, unless you want it propagated to all the same hardlinked files.
+
 ### Clear
 
 If you rename or restructure things you may want to remove old hardlinked itemes in dest. Run sift3 with the commandline option --clear and old hardlinks will be removed.
 
-Tip: To get an empty dest just run a sift3 with --clear using an empty folder as repo.
+Parent dest folders and empty dest folders will remain.
 
-### Missing
+Warning: sift3 will NOT ask for any confirmation before it clears out dest.
+
+Tip: To get an empty dest just run a sift3 with --clear using an empty folder as repo. This is very useful if you want to backup dest. If you backup repo and an empty dest, you have a full backup.
+
+### Missing - missing.txt
 
 You may want to find out what items in the repo are not matched in dest, so you can add new dest folders to handle that. Run sift3 with the commandline option --missing. Then a file dest/missing.txt will be created with all items not matched from the repo.
 
-#### Performance and no progress indicator - verbosity
+### Performance and no progress indicator - verbosity
 
 Hardlinking is fast. Each repo item is compared to dest search sets held in RAM. But this is in essence a brute force nested linear search, every single dest folder is tested against every single item in repo, wich is very bad for performance. But for a moderate size repo and a moderate size dest, on a local fast filesystem, sift3 runtimes are typically measured in seconds or single minutes. Typically it is the filesystem speed that is the bottleneck, not the processing power.
 
@@ -113,8 +120,11 @@ If you need to improve performance, split your data into several smaller repo an
 If you want some indication that sift3 is working and hasn't hung, you can increase the verbosity using the --verbosity commandline option. Each time you use the option the verbosity level is increased one step.
 
 Verbosity 0: sift3 is silent
+
 Verbosity 1: sift3 tells when it shifts between reading (and celaring) dest and reading repo.
+
 Verbosity 2: sift3 tells you about what it does with every item in dest and repo.
+
 Verbosity 3: for debugging, not recommended...
 
 Verbosity 2 gives a good indication of the pace of sift3.
