@@ -1,6 +1,8 @@
 # sift3
 Repository sifter and hardlinker - Double Deep
 
+GPL3 Software
+
 sift3 - An improved file sifter
 
 sift3 is a utility, similar to sift, that allows you to automatically sift source folders for items (files or folders) and selectively move or hard link these items to subfolders in a destination folder. 
@@ -11,7 +13,7 @@ Now sift3 supports varable depth repo and dest. Matching is by complete word or 
 
 ## Usage
 
-    sift2 Copyright Anders Larsen 2020 gislagard@gmail.com
+    sift3 Copyright Anders Larsen 2020 gislagard@gmail.com
     
     Hardlink items in repo to matching folders at dest.
     
