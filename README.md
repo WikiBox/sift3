@@ -1,9 +1,7 @@
 # sift3
-Repository sifter and hardlinker - Double Deep
+Repository sifter and hardlinker - GPLv3
 
-GPL3 Software
-
-sift3 - A full rewrite of WikiBox/sift
+![Sieve](https://github.com/WikiBox/sift3/blob/master/sieve.png)
 
 ## General
 
