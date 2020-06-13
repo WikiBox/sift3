@@ -7,6 +7,8 @@ sift3 is a utility, similar to sift, that allows you to automatically sift sourc
 
 This is similar to the older WikiBox/sift but sift3 is a total rewrite with much improved matching and features.
 
+Now sift3 supports varable depth repo and dest. Matching is by complete word or optionally free. CamelCase is detected and used.
+
 ## Usage
 
     sift2 Copyright Anders Larsen 2020 gislagard@gmail.com
