@@ -1,6 +1,8 @@
 /* 
     sift3 - Copyright Anders Larsen 2020 Gislagard@gmail.com
 
+    For docs, see: https://github.com/WikiBox/sift3
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -33,9 +35,6 @@ ofstream ostrm_missing;
 
 vector<pair<fs::path, string> > repo_items;
 vector<pair<fs::path, vector<string> > > dest_items;
-fs::path repo_base;
-
-void sift(const fs::path& repo_folder, const fs::path& dest_folder);
 
 void tokenize(string str, const string& delimiter, vector<string> &tokens)
 {
@@ -58,12 +57,9 @@ void tokenize(string str, const string& delimiter, vector<string> &tokens)
     } while (pos < len && prev < len);
 }
 
-void recursive_remove(fs::path p)
-{
-    std::error_code ec;
-
-    fs::remove_all(p, ec);
-}
+/*
+ * Recursive hardlink (copy file w. hardlink&recursion) in the stdlib seems to be broken
+ */
 
 void recursive_hardlink(fs::path src, fs::path dst)
 {
@@ -95,7 +91,7 @@ void recursive_hardlink(fs::path src, fs::path dst)
 }
 
 /*
- * Find valid word break to use for starts and stops
+ * Find word breaks to use for valid starts and stops of word matches
  */
 
 void build_start_stop(string& s, vector<bool>& start, vector<bool>& stop)
@@ -118,11 +114,11 @@ void build_start_stop(string& s, vector<bool>& start, vector<bool>& stop)
 
         cur = s[i];
 
-        // Is [cur] a valid start of a word?
+        // Is cur a valid start of a word?
         start.push_back(((isalpha(cur) && !isalpha(pre)) ||   // _[a]
                          (isupper(cur) &&  islower(pre))));   // a[A]
         
-        // Is [curr] a valid stop of a word?
+        // Is cur a valid stop of a word?
         stop.push_back(((isalpha(cur) && !isalpha(suc)) ||    // [a]_
                         (islower(cur) &&  isupper(suc))));    // [a]A
     }
@@ -196,7 +192,6 @@ bool match(string& s, size_t spos, const vector<string>& p, size_t ppos, const v
     return false;
 }
 
-
 inline bool has_suffix(std::string const & s, std::string const & suffix)
 {
     if (suffix.length() > s.length()) 
@@ -206,7 +201,7 @@ inline bool has_suffix(std::string const & s, std::string const & suffix)
 }
 
 /*
- * Read everything in repo and sift - recursive
+ * Iterate over everything in repo and sift one item after another.
  * repo_info holds all words from previous recursion to use in a match
  */
 
@@ -217,7 +212,7 @@ void sift_repo(const fs::path repo_folder, const string repo_info = "")
         string filename = repo_folder_item.path().filename().string();    
 
         if(!has_suffix(filename, "...") ||       // has not suffix ... 
-           !fs::is_directory(repo_folder_item))  // or is a file
+           !fs::is_directory(repo_folder_item))  // or is not a file
         {
             string new_repo_info = repo_info;
 
@@ -321,7 +316,7 @@ void read_dest(const fs::path dest_folder, const string dest_info = "")
 
             vector<string> variants;
 
-            tokenize(new_dest_info, ",();", variants);   // Filter out in parent folders???
+            tokenize(new_dest_info, ",();", variants);
 
             for (auto& var : variants)
             {
@@ -406,16 +401,18 @@ int main(int argc, char** argv)
 
     if(syntax_error || !(fs::exists(repo) && fs::exists(dest)))
     {            
-        cerr << "sift2 Copyright Anders Larsen 2020 gislagard@gmail.com\n\n"
-             << "Hardlink items in repo to matching folders at dest.\n\n"
+        cerr << "sift3 Copyright Anders Larsen 2020 gislagard@gmail.com\n\n"
+             << "This program is free software under the terms of GPLv3.\n\n"
+             << "Hardlink items in repo folder to matching subfolders in dest.\n\n"
              << "Matching rules: \n"
-             << "  Items match once and in order.\n"
+             << "  Items match only once and in strict order.\n"
              << "  Matches are not case sensitive for ASCII.\n"
              << "  Suffix '...' in folder names creates a parent folder.\n"
              << "  Lower case words in parent folders are not matched.\n"
-             << "  Use any of ',(); for alt match in not parent dest.\n"
-             << "  Use _underscore_ in dest to ignore word start/stop.\n\n"
-             << "Usage: " << argv[0] << " [options] repo dest\n\n" 
+             << "  Use any of ',(); for alternative match in not parent dest.\n"
+             << "  Full words must match. CamelCase is detected if used.\n"
+             << "  Use _underscore_ in dest to disable full word start/stop.\n\n"
+             << "Usage: sift3 [options] repo dest\n\n" 
              << "Options:\n\n"
              << "    -c or --clear    Clear existing items in dest before sift.\n"
              << "    -m or --missing  Log not matching in repo to dest/missing.txt.\n"
